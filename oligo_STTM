@@ -1,0 +1,114 @@
+
+#! /usr/bin/perl -w
+# STTM 引物设计，附带计数器，2015-05-26
+
+use Bio::Seq;
+use Bio::SeqIO;
+
+my %TN =( # Triple nucleotide 哈希
+	      "aaa" => "tcga",  "aag" => "tcca",  "aac" => "tcga",  "aat" => "tcga",
+	      "aga" => "ttga",  "agg" => "ttga",  "agc" => "ttga",  "agt" => "ttga",
+              "aca" => "taga",  "acg" => "taga",  "acc" => "taga",  "act" => "taga",
+              "ata" => "tcga",  "atg" => "tcca",  "atc" => "taga",  "att" => "tcga",
+
+      	      "gaa" => "taga",  "gag" => "taga",  "gac" => "taga",  "gat" => "taaa",	      
+              "gga" => "taga",  "ggg" => "tagg",  "ggc" => "tagg",  "ggt" => "taga", 
+              "gca" => "ttga",  "gcg" => "ttta",  "gcc" => "taga",  "gct" => "taga",
+ 	      "gta" => "taga",  "gtg" => "ttta",  "gtc" => "taag",  "gtt" => "taaa",
+
+              "caa" => "tagc",  "cag" => "tagc",  "cac" => "tagc",  "cat" => "tagc",
+              "cga" => "tagc",  "cgg" => "tagc",  "cgc" => "taac",  "cgt" => "tagc", 
+	      "cca" => "ttta",  "ccg" => "taga",  "ccc" => "taga",  "cct" => "taga",
+ 	      "cta" => "tagc",  "ctg" => "tagc",  "ctc" => "tagc",  "ctt" => "tagc",
+
+              "taa" => "actc",  "tag" => "actc",  "tac" => "agtc",  "tat" => "agtc",
+              "tga" => "gaac",  "tgg" => "actc",  "tgc" => "acta",  "tgt" => "gaac",
+              "tca" => "gggt",  "tcg" => "gggc",  "tcc" => "taga",  "tct" => "ggat", 
+ 	      "tta" => "aagt",  "ttg" => "aagt",  "ttc" => "aagc",  "ttt" => "aagc",
+
+         );
+
+my $infile        = shift or die ;
+my $infileformat  = shift or die ;
+my $outfile       = shift or die ;
+my $outfileformat = shift or die ;
+my $primerfile = shift or die;
+my $primernumber =shift or die;
+
+open OUT, ">>$primerfile";
+
+my $lic1 = "CgACgACAAgACCgT";
+my $lic2 = "gAggAgAagAgCCgT";
+my $sp1 = "gttgttgttgttatgg";
+my $sp2 = "attcttcttctttagacca";
+
+my $count = 0;
+
+
+my $seq_in = Bio::SeqIO->new (
+                             -file   => "<$infile",
+                             -format => $infileformat,
+                             -alphabet => "dna", 
+                             );
+my $seq_out = Bio::SeqIO->new (
+                              -file   => ">$outfile",
+                              -format => $outfileformat,
+                              -alphabet => "dna",
+                              );
+print $outfile, "\n";
+
+while (my $in = $seq_in->next_seq()) {
+       
+       my $len = $in->length;
+       my $p10 = $in->subseq(1,10);
+       my $tn = $in->subseq(11,13);
+       my $s12;
+
+       if ($len>22){
+       $s12 = $in->subseq(12,22);	            
+                     } else {	       
+       $s12 = $in->subseq(12,$len);
+                            } 
+		    
+       my $tn = lc($tn); 
+       my $Tn= $TN{$tn};	
+	
+       my $STTM = "$p10"."$Tn"."$s12";
+              
+       print $in->seq." ".$in->length."|";
+       
+       my $out = Bio::Seq->new (
+                               -seq =>"$STTM",
+                               -display_id => $in->display_id,                       
+			       -alphabet => "dna",
+       
+                              );
+       print $out->seq." ".$out->length."\n";
+       
+       $seq_out->write_seq ($out);
+       
+       my $RV_out = $out->revcom;
+       my $RV_STTM = $RV_out->seq;
+
+
+       my $ID = $out->display_id;
+       my $FP = $lic1.$RV_STTM.$sp1;
+       my $RP = $lic2.$STTM.$sp2;
+       my $Fordes = "lic1+ forward primer for $ID+ STTM 5' semi";
+       my $Revdes = "lic2+ reverse primer for $ID+ STTM 3' semi"; 
+
+       $count++;
+       my $pmf = $primernumber+1+2*($count-1);
+       my $pmr = $pmf+1; 
+
+       print OUT $FP.",".$Fordes.",ojp".$pmf."\n";
+       print OUT $RP.",".$Revdes.",ojp".$pmr."\n"."\n";
+       
+       
+
+                                     }
+
+
+print $count." STTMs designed \n";
+			
+close OUT;				     

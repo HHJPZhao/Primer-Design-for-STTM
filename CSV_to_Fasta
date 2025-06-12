@@ -1,0 +1,41 @@
+#!/bin/perl -w
+use strict;
+use Bio::SeqIO;
+use Bio::Seq; 
+
+my $total = 0;
+my $count = 0;
+
+my $infile = shift or die;
+my $outfile = shift or die;
+
+my $seq_obj;
+
+open IN, "<$infile";
+            
+my $seq_out = Bio::SeqIO->new(
+                              -file   => ">$outfile",
+                              -format => "Fasta",
+		             );
+
+while (<IN>){
+            if (m/(?<ID>\w+),(?<seq>\w+)/) {  
+            my $ID="nbt-"."$+{ID}";
+            my $seq=$+{seq};
+	    
+	    $total++;
+            $count++;
+            print "$total",":";
+            $seq_obj = Bio::Seq->new(-seq => $seq,                        
+                          -display_id => $ID ,                        
+                          -alphabet => "rna" );
+                                           }
+            print $seq_obj->display_id, "|",$seq_obj->seq, "\n";
+            $seq_out->write_seq($seq_obj);
+			  
+	    }
+ 
+
+close IN;
+;
+
