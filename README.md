@@ -1,2 +1,2 @@
 Primer Design for the STTM Technology 
-Short Tandem Target Mimic for microRNA
+Perl/BioPerl Scripts for Short Tandem Target Mimic for microRNA
