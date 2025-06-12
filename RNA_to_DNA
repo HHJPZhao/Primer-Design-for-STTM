@@ -1,0 +1,20 @@
+#! /usr/bin/perl -w 
+use strict;
+
+my $infile        = shift or die ;
+my $outfile       = shift or die ;
+
+open IN, "<$infile";
+open OUT, ">>$outfile";
+
+while (<IN>){
+	    if (m/(?<nbt>\>nbt-)(?<ID>\w+)/) {
+	    print OUT "$+{nbt}"."$+{ID}"."\n";
+	    }
+	    else{
+		s#U#T#g;    
+	        print OUT $_;
+	        }
+	    }
+close IN;
+close OUT;
