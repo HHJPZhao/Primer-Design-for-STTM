@@ -10,6 +10,7 @@ PipeLine
 
 
 
+
 cd c:\users\desktop
 cd design microRNA1
 perl csv_to_Fasta microRNA.csv microRNA.fa
