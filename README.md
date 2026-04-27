@@ -7,6 +7,7 @@ Installing BioPerl on Windows  http://www.bioperl.org/wiki/Installing_BioPerl_on
 GUI Installation (activPerl)
 
 PipeLine
+
 MicroRNA List in CSV File, Use CSV_to_Fasta, Generate MicroRNA Fasta List
 MicroRNA Fasta File in RNA Alphabeta, Use RNA_to_DNA, Generate DNA Sequence for STTM Primer Design
 MicroRNA Fasta File in DNA Alphabeta, Use oligo_STTM, Generate Primers for MicroRNA 
