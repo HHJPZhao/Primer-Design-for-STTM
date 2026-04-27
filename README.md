@@ -6,6 +6,9 @@ bioperl
 Installing BioPerl on Windows  http://www.bioperl.org/wiki/Installing_BioPerl_on_Windows
 GUI Installation (activPerl)
 
+PipeLine
+
+
 
 cd c:\users\desktop
 cd design microRNA1
